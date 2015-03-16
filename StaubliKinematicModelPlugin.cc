@@ -31,6 +31,12 @@ namespace gazebo
 
         this->updateConnection = event::Events::ConnectWorldUpdateBegin(
                 boost::bind(&StaubliKinematicModelPlugin::UpdateStates, this, _1));
+
+        // Create a node for transportation
+        this->node = transport::NodePtr(new transport::Node());
+        this->node->Init();
+        this->stateSub = this->node->Subscribe("~/staubli_joint_states",
+            NULL, this);
     }
 
     //////////////////////////////////////////////////////////
@@ -49,10 +55,20 @@ namespace gazebo
         std::map<std::string, double> joint_position_map;
 
         joint_position_map["TX90XLHB::joint1"] = cos(cur_time.Double());
+        joint_position_map["TX90XLHB::joint2"] = sin(cur_time.Double());
+        joint_position_map["TX90XLHB::joint3"] = -sin(cur_time.Double());
+        joint_position_map["TX90XLHB::joint4"] = -cos(cur_time.Double());
+        joint_position_map["TX90XLHB::joint5"] = cos(cur_time.Double());
+        joint_position_map["TX90XLHB::joint6"] = sin(cur_time.Double());
         this->model->SetJointPositions(joint_position_map);
 
         this->world->SetPaused(is_paused);
     }
 
+    //////////////////////////////////////////////////////////
+    void StaubliKinematicModelPlugin::setStates()
+    {
+
+    }
     GZ_REGISTER_MODEL_PLUGIN(StaubliKinematicModelPlugin)
 }
