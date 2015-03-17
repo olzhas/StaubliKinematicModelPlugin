@@ -1,0 +1,11 @@
+package staubli_joint_states.msgs;
+
+message StaubliJointStates
+{
+  required int32 joint1 = 1 [default=0];
+  required int32 joint2 = 2 [default=0];
+  required int32 joint3 = 3 [default=0];
+  required int32 joint4 = 4 [default=0];
+  required int32 joint5 = 5 [default=0];
+  required int32 joint6 = 6 [default=0];
+}
