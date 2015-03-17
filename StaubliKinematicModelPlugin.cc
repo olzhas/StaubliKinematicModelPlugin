@@ -1,12 +1,16 @@
 // based on JointTrajectoryPlugin.cc
 
 #include "StaubliKinematicModelPlugin.hh"
+#include "staubli_joint_states.pb.h"
 
 namespace gazebo
 {
     //////////////////////////////////////////////////////////
     StaubliKinematicModelPlugin::StaubliKinematicModelPlugin()
     {
+        for (int i = 0; i < numJoints; ++i) {
+            jointStates[i] = 0;
+        }
     }
 
     //////////////////////////////////////////////////////////
@@ -26,17 +30,17 @@ namespace gazebo
         // this->world->GetPhysicsEngine()->SetGravity(math::Vector3(0,0,0));
 
         for(physics::Joint_V::const_iterator j = this->model->GetJoints().begin();
-                            j != this->model->GetJoints().end(); ++j)
+            j != this->model->GetJoints().end(); ++j)
             (*j)->SetPosition(0, 0);
 
         this->updateConnection = event::Events::ConnectWorldUpdateBegin(
-                boost::bind(&StaubliKinematicModelPlugin::UpdateStates, this, _1));
+                    boost::bind(&StaubliKinematicModelPlugin::UpdateStates, this, _1));
 
         // Create a node for transportation
         this->node = transport::NodePtr(new transport::Node());
         this->node->Init();
         this->stateSub = this->node->Subscribe("~/staubli_joint_states",
-            NULL, this);
+                                               &StaubliKinematicModelPlugin::setStatesCallback, this);
     }
 
     //////////////////////////////////////////////////////////
@@ -53,22 +57,32 @@ namespace gazebo
         if (!is_paused) this->world->SetPaused(true);
 
         std::map<std::string, double> joint_position_map;
-
-        joint_position_map["TX90XLHB::joint1"] = cos(cur_time.Double());
-        joint_position_map["TX90XLHB::joint2"] = sin(cur_time.Double());
-        joint_position_map["TX90XLHB::joint3"] = -sin(cur_time.Double());
-        joint_position_map["TX90XLHB::joint4"] = -cos(cur_time.Double());
-        joint_position_map["TX90XLHB::joint5"] = cos(cur_time.Double());
-        joint_position_map["TX90XLHB::joint6"] = sin(cur_time.Double());
+        mutex.lock();
+        joint_position_map["TX90XLHB::joint1"] = (double) jointStates[0] / 180.0 * M_PI;
+        joint_position_map["TX90XLHB::joint2"] = (double) jointStates[1] / 180.0 * M_PI;
+        joint_position_map["TX90XLHB::joint3"] = (double) jointStates[2] / 180.0 * M_PI;
+        joint_position_map["TX90XLHB::joint4"] = (double) jointStates[3] / 180.0 * M_PI;
+        joint_position_map["TX90XLHB::joint5"] = (double) jointStates[4] / 180.0 * M_PI;
+        joint_position_map["TX90XLHB::joint6"] = (double) jointStates[5] / 180.0 * M_PI;
+        mutex.unlock();
         this->model->SetJointPositions(joint_position_map);
 
         this->world->SetPaused(is_paused);
     }
 
     //////////////////////////////////////////////////////////
-    void StaubliKinematicModelPlugin::setStates()
+    void StaubliKinematicModelPlugin::setStatesCallback(StaubliJointStatesPtr &msg)
     {
+        mutex.lock();
 
+        jointStates[0] = msg->joint1();
+        jointStates[1] = msg->joint2();
+        jointStates[2] = msg->joint3();
+        jointStates[3] = msg->joint4();
+        jointStates[4] = msg->joint5();
+        jointStates[5] = msg->joint6();
+
+        mutex.unlock();
     }
     GZ_REGISTER_MODEL_PLUGIN(StaubliKinematicModelPlugin)
 }

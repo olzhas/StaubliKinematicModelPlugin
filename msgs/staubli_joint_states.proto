@@ -1,4 +1,4 @@
-package staubli_joint_states.msgs;
+package staubli_joint_states_msgs.msgs;
 
 message StaubliJointStates
 {

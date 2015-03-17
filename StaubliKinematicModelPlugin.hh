@@ -15,35 +15,43 @@
 #include "gazebo/msgs/msgs.hh"
 #include "gazebo/math/gzmath.hh"
 
+#include "staubli_joint_states.pb.h"
+
 namespace gazebo
 {
-    class GAZEBO_VISIBLE StaubliKinematicModelPlugin : public ModelPlugin
-    {
-        public: StaubliKinematicModelPlugin();
 
-        public: virtual ~StaubliKinematicModelPlugin();
+typedef const boost::shared_ptr<const staubli_joint_states_msgs::msgs::StaubliJointStates> StaubliJointStatesPtr;
 
-        public: void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+class GAZEBO_VISIBLE StaubliKinematicModelPlugin : public ModelPlugin
+{
+public: StaubliKinematicModelPlugin();
 
-        private: void UpdateStates(const common::UpdateInfo &_info);
-        private: void setStates();
+public: virtual ~StaubliKinematicModelPlugin();
 
-        private: physics::WorldPtr world;
-        private: physics::ModelPtr model;
-        private: physics::JointPtr joint;
+private: void setStatesCallback(StaubliJointStatesPtr &msg);
+public: void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
 
-        private: boost::mutex update_mutex;
+private: void UpdateStates(const common::UpdateInfo &_info);
 
-        private: event::ConnectionPtr updateConnection;
 
-        /// \brief Node used to establish communication with gzserver.
-        private: transport::NodePtr node;
+private: physics::WorldPtr world;
+private: physics::ModelPtr model;
+private: physics::JointPtr joint;
 
-        /// \brief Publisher to world statistics messages.
-        private: transport::SubscriberPtr stateSub;
+private: boost::mutex update_mutex;
 
-        private: boost::mutex mutex;
-    };
+private: event::ConnectionPtr updateConnection;
+
+    /// \brief Node used to establish communication with gzserver.
+private: transport::NodePtr node;
+
+    /// \brief Publisher to world statistics messages.
+private: transport::SubscriberPtr stateSub;
+
+private: boost::mutex mutex;
+private: enum {numJoints = 6};
+private: int jointStates[numJoints];
+};
 }
 
 #endif

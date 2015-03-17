@@ -24,8 +24,8 @@ link_directories(
     )
 add_subdirectory(msgs)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_library (StaubliKinematicModelPlugin SHARED StaubliKinematicModelPlugin.cc)
-target_link_libraries(StaubliKinematicModelPlugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(StaubliKinematicModelPlugin staubli_joint_states_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(StaubliKinematicModelPlugin staubli_joint_states_msgs)

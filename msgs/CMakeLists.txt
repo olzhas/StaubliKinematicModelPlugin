@@ -9,7 +9,6 @@ endforeach()
 
 set (msgs
   staubli_joint_states.proto
-
 )
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${msgs})
 add_library(staubli_joint_states_msgs SHARED ${PROTO_SRCS})
