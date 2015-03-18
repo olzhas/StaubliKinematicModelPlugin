@@ -47,7 +47,6 @@ namespace gazebo
 
     void StaubliKinematicModelPlugin::UpdateStates(const common::UpdateInfo &_info)
     {
-        common::Time cur_time = this->world->GetSimTime();
 
         // for (physics::Joint_V::const_iterator j = this->model->GetJoints().begin();
         //                       j != this->model->GetJoints().end(); ++j)
