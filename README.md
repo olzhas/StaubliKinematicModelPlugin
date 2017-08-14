@@ -24,7 +24,7 @@ $ cd build
 Run CMake to create appropriate building scripts for your system.
 
 ```bash
-cmake ..
+$ cmake ..
 ```
 
 The last step is to build the sources. Do this typing the following into your terminal.
